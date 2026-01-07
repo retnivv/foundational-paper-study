@@ -40,7 +40,7 @@ Diffusion model은 latent variable model.
 
 $p_\theta(x_{0:T})$ : reverse process (Markov chain). 
 
-$p_\theta(x_{0:T}) := p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} \mid x_t), \\p_\theta(x_{t-1} \mid x_t) := \mathcal{N}\!\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\bigr).$ : transition. 
+$p_\theta(x_{0:T}) := p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} \mid x_t), \\p_\theta(x_{t-1} \mid x_t) := \mathcal{N}\\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\bigr).$ : transition. 
 
 평균과 분산을 예측해야함 → 노이즈에서 원래 이미지로 복원 가능
 
@@ -50,13 +50,13 @@ Markov chain. 점진적으로 데이터에 가우시안 노이즈를 더함.
 
 각 step 마다 더하는 노이즈의 스케일을 $\beta_t$로 조정함. (점진적으로 스케일이 커짐. 학습 가능하게 설정할 수도 있고 고정된 하이퍼파라미터로 둘 수도 있음.)
 
-$q(x_{1:T} \mid x_0) := \prod_{t=1}^T q(x_t \mid x_{t-1}) \\ q(x_t \mid x_{t-1}) := \mathcal{N}\!\bigl(x_t; \sqrt{1-\beta_t}\,x_{t-1}, \beta_t I\bigr).$
+$q(x_{1:T} \mid x_0) := \prod_{t=1}^T q(x_t \mid x_{t-1}) \\ q(x_t \mid x_{t-1}) := \mathcal{N}\\bigl(x_t; \sqrt{1-\beta_t}\,x_{t-1}, \beta_t I\bigr).$
 
 ---
 
 $q(x_t \mid x_0)$ 를 closed form으로 나타낼 수 있음.
 
-$q(x_t \mid x_0) = \mathcal{N}\!\bigl(x_t;\, \sqrt{\bar{\alpha}_t}\,x_0,\,(1-\bar{\alpha}_t)I\bigr)$      where  ( $\alpha_t := 1 - \beta_t, \ \bar{\alpha}_t := \prod_{s=1}^t \alpha_s$ )
+$q(x_t \mid x_0) = \mathcal{N}\\bigl(x_t;\, \sqrt{\bar{\alpha}_t}\,x_0,\,(1-\bar{\alpha}_t)I\bigr)$      where  ( $\alpha_t := 1 - \beta_t, \ \bar{\alpha}_t := \prod_{s=1}^t \alpha_s$ )
 
 - 증명
     
@@ -105,7 +105,7 @@ negative log likelihood 자체는 intractable하기 때문에 variational bound�
 
 $L_T$ : constant, 학습 때 무시 가능. (q에는 학습가능한 파라미터가 없고, $x_T$는 가우시안 노이즈.)
 
-$L_0$ : 별도의 discrete decoder를 사용하기도 함. ( derived from $\mathcal{N}\!\bigl(x_{0}; \mu_\theta(x_1, 1), \Sigma_\theta(x_1, 1)\bigr).$
+$L_0$ : 별도의 discrete decoder를 사용하기도 함. ( derived from $\mathcal{N}\\bigl(x_{0}; \mu_\theta(x_1, 1), \Sigma_\theta(x_1, 1)\bigr).$
 
 KL divergence들이 모두 가우시안 끼리의 비교이므로, 높은 분산의 Monte Carlo estimates 대신 Rao-Blackwellized 방식으로 계산 가능.
 
@@ -123,7 +123,7 @@ Diffusion model은 자유도가 큼 ( $\beta_t$ 설정, Gaussian parameterizatio
 
 ### Forward process and $L_T$
 
-$L_T = D_{KL}\!\big(q(x_T \mid x_0) \,\|\, p(x_T)\big)$
+$L_T = D_{KL}\\big(q(x_T \mid x_0) \,\|\, p(x_T)\big)$
 
 $\beta_t$는 상수로 설정. (학습 불가능) & q에는 학습가능한 파라미터가 없음. → $L_T$는 상수. 학습 때 무시 가능.
 
@@ -131,14 +131,46 @@ $\beta_t$는 상수로 설정. (학습 불가능) & q에는 학습가능한 파�
 
 ### Reverse process and $L_{1:T-1}$
 
-$L_{t-1} = \mathbb{E}_q \!\left[ D_{KL}\!\big(q(x_{t-1}\mid x_t, x_0) \,\|\, p_\theta(x_{t-1}\mid x_t)\big) \right]$
+$$L_{t-1}=
+\mathbb{E}_q \\left[
+D_{KL}\\big(
+q(x_{t-1}\mid x_t, x_0)
+\,\|\,
+p_\theta(x_{t-1}\mid x_t)
+\big)
+\right]
+$$
 
-$p_\theta(x_{t-1} \mid x_t) := \mathcal{N}\!\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\bigr)$ 에서
+$$
+p_\theta(x_{t-1} \mid x_t)
+:=
+\mathcal{N}\\bigl(
+x_{t-1};
+\mu_\theta(x_t, t),
+\Sigma_\theta(x_t, t)
+\bigr)
+$$
 
-$\Sigma_\theta(x_t, t) = \sigma_t^2 I$ 로 설정.
+에서
 
-- $\sigma_t^2 = \beta_t$ → $x_0$가 완전 랜덤인 가우시안일 때 적절.
-- $\sigma_t^2 = \tilde{\beta}_t = \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\,\beta_t$ → $x_0$가 deterministic한 한 점일 때 적절.
+$$
+\Sigma_\theta(x_t, t) = \sigma_t^2 I
+$$
+
+로 설정.
+
+- $\sigma_t^2 = \beta_t$  
+  → $x_0$가 완전 랜덤인 가우시안일 때 적절.
+
+- $\sigma_t^2 = \tilde{\beta}_t$
+
+$$\tilde{\beta}_t=
+\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\,\beta_t
+$$
+
+→ $x_0$가 deterministic한 한 점일 때 적절.
+
+
 
 - Rmk)
     
@@ -168,7 +200,7 @@ $\mu_{\theta}$를 다음과같이 매개변수화 할 수 있음.
 따라서,
 
 $$
-\begin{aligned}L_{t-1} - C&= \mathbb{E}_{x_0, \epsilon} \Bigg[ \frac{1}{2\sigma_t^2}     \big\| \tilde{\mu}_t(x_t, x_0) - \mu_\theta(x_t, t) \big\|^2 \Bigg] \\[6pt]&= \mathbb{E}_{x_0, \epsilon} \Bigg[ \frac{1}{2\sigma_t^2}     \Big\| \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \tfrac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon \Big)     - \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \tfrac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon_\theta(x_t,t) \Big)     \Big\|^2 \Bigg] \\[6pt]&= \mathbb{E}_{x_0, \epsilon} \Bigg[     \frac{(1-\alpha_t)^2}{2 \alpha_t (1-\bar{\alpha}_t) \sigma_t^2}     \big\| \epsilon - \epsilon_\theta(x_t, t) \big\|^2 \Bigg] \\[6pt]&= \mathbb{E}_{x_0, \epsilon} \Bigg[     \frac{(1-\alpha_t)^2}{2 \alpha_t (1-\bar{\alpha}_t) \sigma_t^2}     \big\| \epsilon - \epsilon_\theta\!\big(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t}\,\epsilon,\, t\big) \big\|^2     \Bigg].\end{aligned}
+\begin{aligned}L_{t-1} - C= \mathbb{E}_{x_0, \epsilon} \Bigg[ \frac{1}{2\sigma_t^2}     \big\| \tilde{\mu}_t(x_t, x_0) - \mu_\theta(x_t, t) \big\|^2 \Bigg] \= \mathbb{E}_{x_0, \epsilon} \Bigg[ \frac{1}{2\sigma_t^2}     \Big\| \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \tfrac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon \Big)     - \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \tfrac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon_\theta(x_t,t) \Big)     \Big\|^2 \Bigg] \= \mathbb{E}_{x_0, \epsilon} \Bigg[     \frac{(1-\alpha_t)^2}{2 \alpha_t (1-\bar{\alpha}_t) \sigma_t^2}     \big\| \epsilon - \epsilon_\theta(x_t, t) \big\|^2 \Bigg] \= \mathbb{E}_{x_0, \epsilon} \Bigg[     \frac{(1-\alpha_t)^2}{2 \alpha_t (1-\bar{\alpha}_t) \sigma_t^2}     \big\| \epsilon - \epsilon_\theta\\big(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t}\,\epsilon,\, t\big) \big\|^2     \Bigg].\end{aligned}
 $$
 
 ( i.e. 
@@ -181,7 +213,16 @@ $$
 
 따라서 $x_{t-1} \sim p_\theta(x_{t-1}\mid x_t)$ 를 sampling하는 식은
 
-$x_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}\, \epsilon_\theta(x_t, t) \right) + \sigma_t z, \quad z \sim \mathcal{N}(0, I)$
+$$x_{t-1}=\frac{1}{\sqrt{\alpha_t}}\left(x_t-
+\frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}
+\,\epsilon_\theta(x_t, t)
+\right)
++
+\sigma_t z,
+\quad
+z \sim \mathcal{N}(0, I)
+$$
+
 
 이렇게 적을 수 있음.
 
@@ -283,7 +324,7 @@ training 과정을 $x_0, \epsilon, t$에 대한 SGD로 해석 가능.
 # Experiments
 
 - T = 1000
-- $\beta_1 = 10^{-4}, \beta_T = 0.02$. 선형적으로 증가하도록 설정. → 이렇게 하니까 $L_T \;=\; D_{\mathrm{KL}}\!\bigl(q(x_T \mid x_0)\,\|\,\mathcal{N}(0,I)\bigr) \;\approx\; 10^{-5}$ 정도로 나옴. 최종 $x_T$가 거의 온전한 가우시안 노이즈에 가까워서 reverse process가 순수한 노이즈에서 시작될 수 있음.
+- $\beta_1 = 10^{-4}, \beta_T = 0.02$. 선형적으로 증가하도록 설정. → 이렇게 하니까 $L_T \;=\; D_{\mathrm{KL}}\\bigl(q(x_T \mid x_0)\,\|\,\mathcal{N}(0,I)\bigr) \;\approx\; 10^{-5}$ 정도로 나옴. 최종 $x_T$가 거의 온전한 가우시안 노이즈에 가까워서 reverse process가 순수한 노이즈에서 시작될 수 있음.
 - reverse process로는 U-Net backbone을 사용. GroupNorm 적용. (이미지를 받아서 노이즈 예측)
 - parameter들은 time 간에 공유되고 sinusoidal positional embedding 적용해서 t를 벡터로 변환.
 - 16 x 16 크기의 feature map에서는 self-attention 수행.
