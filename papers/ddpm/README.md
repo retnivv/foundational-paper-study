@@ -73,10 +73,10 @@ $x_0$이 주어지면 forward process posterior를 계산 가능.
     
     가우시안임을 어떻게 아는지? → 베이즈 정리를 사용해서 적어보면 가우시안끼리 곱하고 나눴으므로.
     
-    ![image.png](03883be6-2265-481e-b037-5583e75d05b2.png)
+    ![image.png](image30.png)
     
 
-![image.png](a4f0eac4-0c66-4fdd-bb3c-ffab2faf5d1c.png)
+![image.png](image31.png)
 
 → 위의 공식을 사용해서 $x_t, \epsilon_t$에 대해서만 남길 수 있음.
 
