@@ -63,9 +63,9 @@ decoder stack의 self-attention에서 현재 이후의 위치를 참조 못하�
 
 정답 시퀀스 : [I, am, a, student]
 
-Decoder에 주는 입력 (output embedding) - [<s>, I, am, a] (한 칸씩 밀려있음)
+Decoder에 주는 입력 (output embedding) - [`<s>`, I, am, a] (한 칸씩 밀려있음)
 
-그런데 <s>, I 만을 가지고 am을 예측해야 하는데 이때 뒤의 am, a를 참조해서는 안 됨. → masking으로 방지.
+그런데 `<s>`, I 만을 가지고 am을 예측해야 하는데 이때 뒤의 am, a를 참조해서는 안 됨. → masking으로 방지.
 
 ## Attention
 
@@ -127,7 +127,6 @@ $d_{model}$ 차원의 key, value, query에 단일 attention을 적용하는 것�
 
 $$
 MultiHead(Q,K,V) = Concat(head_1, ..., head_h)W^O \\ \text{where } head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)
-
 $$
 
 $Q,K,V \in \mathbb R^n\times d_{model}$ : Scaled Dot-Product Attention 설명할 때 나왔던 $Q,K,V$랑은 다른 것.
@@ -156,11 +155,11 @@ Transformer에서 attention은 세 가지 방식으로 사용됨.
 
 이전 decoder layer로부터 query를, encoder의 출력으로부터 key와 value를 생성. decoder의 각 position이 input sequence의 모든 position을 참조할 수 있도록 함.
 
-1. self-attention layers in the encoder
+2. self-attention layers in the encoder
 
 이전 encoder layer로부터 query, key, value를 생성. encoder의 각 position이 이전 encoder layer의 positon을 참조할 수 있도록 함.
 
-1. self-attention layers in the decoder (masked)
+3. self-attention layers in the decoder (masked)
 
 encoder의 self-attention와 유사. decoder의 각 position이 해당 position 이전의 position(in the decoder)을 참조할 수 있도록 함. (Auto-regressive property를 띄게 하려면 미래의 token을 참조하면 안 되기 때문.)
 
@@ -220,9 +219,22 @@ WMT 2014 English-German, English-French dataset 사용.
 
 Optimizer : Adam ( $\beta_1 = 0.9,\ \beta_2 = 0.98$ )
 
-learning rate :  $d_{\text{model}}^{-0.5} \cdot \min\left( \text{step\_num}^{-0.5},\ \text{step\_num} \cdot \text{warmup\_steps}^{-1.5} \right)$
+learning rate:
 
-                           warmup_steps = 4000
+$$
+d_{\text{model}}^{-0.5} \cdot
+\min\left(
+\text{step}^{-0.5},\ 
+\text{step} \cdot \text{warmup}^{-1.5}
+\right)
+$$
+
+where
+
+$$
+\text{warmup} = 4000
+$$
+
 
 Dropout( $P_{drop} = 0.1$ ), Label Smoothing( $\epsilon = 0.1$ ) 사용.
 
